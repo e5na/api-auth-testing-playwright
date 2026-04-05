@@ -67,4 +67,14 @@ test.describe.serial('Authorization flow', () => {
     console.log('Orders:', JSON.stringify(orders, null, 2))
     expect(orders).toBeTruthy()
   })
+
+  test('should not get orders without authorization token', async ({ request }) => {
+    const response = await request.get(baseUrl + ordersEndpoint, {
+      headers: {
+        accept: '*/*',
+      },
+    })
+
+    expect(response.status()).toBe(401)
+  })
 })
