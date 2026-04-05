@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 import { Login } from '../dto/login-dto'
 
 let loginDto: Login
+const incorrectLogin = new Login('test', 'test')
 const baseUrl = 'https://backend.tallinn-learning.ee'
 const loginEndpoint = '/login/student'
 const ordersEndpoint = '/orders'
@@ -27,6 +28,21 @@ test.describe.serial('Authorization flow', () => {
     const token = await response.text()
     console.log('Received token:', token)
     expect(token).toBeTruthy()
+    })
+
+  test('should fail to receive authorization token', async ({ request }) => {
+    const response = await request.post(baseUrl + loginEndpoint, {
+      headers: {
+        'Content-Type': 'application/json',
+        accept: 'application/json',
+      },
+      data: incorrectLogin,
+    })
+
+    expect(response.status()).toBe(401)
+    const token = await response.text()
+    console.log('Received token:', token)
+    expect(token).toBeFalsy()
   })
 
   test('should get orders with authorization token', async ({ request }) => {
